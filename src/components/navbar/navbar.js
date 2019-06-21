@@ -15,12 +15,16 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import HomeIcon from '@material-ui/icons/Home';
 import CalendarIcon from '@material-ui/icons/CalendarToday';
 import GroceriesIcon from '@material-ui/icons/ShoppingCart';
 import MoneyIcon from '@material-ui/icons/Money';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import * as ROUTES from '../../constants/routes';
+import SignInPage from '../SignIn/signIn';
+import { renderComponent } from 'recompose';
+import './navbar.css';
 
 const drawerWidth = 240;
 
@@ -107,6 +111,21 @@ export default function PersistentDrawerLeft() {
       return <MoneyIcon />
 
   }
+
+  function handleClick(text)
+  {
+    if(text == "Home")
+      return ROUTES.HOME;
+    else if(text == "Message Board")
+      return ROUTES.MESSAGES;
+    else if(text == "Calendar")
+      return ROUTES.CALENDAR;
+    else if(text == "Groceries")
+      return ROUTES.GROCERIES;
+    else if(text == "Payments")
+      return ROUTES.PAYMENTS;
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -147,11 +166,13 @@ export default function PersistentDrawerLeft() {
         </div>
         <Divider />
         <List>
-          {['Home', 'Dashboard', 'Calendar', 'Groceries', 'Payments'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{icon(index)}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
+          {['Home', 'Message Board', 'Calendar', 'Groceries', 'Payments'].map((text, index) => (
+            <Link id="link" to={handleClick(text)}>
+              <ListItem button key={text}>
+                  <ListItemIcon>{icon(index)}</ListItemIcon>
+                  <ListItemText primary={text} />
+              </ListItem>
+            </Link>
           ))}
         </List>
         <Divider />

@@ -17,6 +17,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
+import HomeIcon from '@material-ui/icons/Home';
+import CalendarIcon from '@material-ui/icons/CalendarToday';
+import GroceriesIcon from '@material-ui/icons/ShoppingCart';
+import MoneyIcon from '@material-ui/icons/Money';
 
 const drawerWidth = 240;
 
@@ -89,6 +93,20 @@ export default function PersistentDrawerLeft() {
     setOpen(false);
   }
 
+  function icon(index)
+  {
+    if(index === 0)
+      return <HomeIcon />
+    else if(index === 1)
+      return <MailIcon />
+    else if(index == 2)
+      return <CalendarIcon />
+    else if(index == 3)
+      return <GroceriesIcon />
+    else if(index == 4)
+      return <MoneyIcon />
+
+  }
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -108,8 +126,8 @@ export default function PersistentDrawerLeft() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap>
-            Persistent drawer
+          <Typography variant="h6" align="center" noWrap>
+            Cribbr
           </Typography>
         </Toolbar>
       </AppBar>
@@ -129,29 +147,20 @@ export default function PersistentDrawerLeft() {
         </div>
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          {['Home', 'Dashboard', 'Calendar', 'Groceries', 'Payments'].map((text, index) => (
             <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+              <ListItemIcon>{icon(index)}</ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
           ))}
         </List>
         <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
       </Drawer>
       <main
         className={clsx(classes.content, {
           [classes.contentShift]: open,
         })}
       >
-        //<div className={classes.drawerHeader} />
       </main>
     </div>
   );

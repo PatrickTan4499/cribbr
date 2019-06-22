@@ -1,26 +1,47 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+import Navbar from '../Navbar/navbar';
+import Navigation from '../Navigation/navigation';
+import LandingPage from '../Landing/landing';
+import SignUpPage from '../SignUp/signUp';
+import SignInPage from '../SignIn/signIn';
+import PasswordForgetPage from '../PasswordForget/passwordForget';
+import HomePage from '../Home/home';
+import AccountPage from '../Account/account';
+import AdminPage from '../Admin/admin';
+import MessagesPage from '../Messages/messages'
+import CalendarPage from '../Calendar/calendar'
+import GroceriesPage from '../Groceries/groceries';
+import PaymentsPage from '../Payments/payments';
+
+import * as ROUTES from '../../constants/routes';
+import { withAuthentication } from '../Session';
+
+const App = () => (
+  <Router>
+    <div>
+      <Navbar/>
+      <Navigation />
+
+      <hr />
+
+      <Route exact path={ROUTES.LANDING} component={LandingPage} />
+      <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
+      <Route path={ROUTES.SIGN_IN} component={SignInPage} />
+      <Route
+        path={ROUTES.PASSWORD_FORGET}
+        component={PasswordForgetPage}
+      />
+      <Route path={ROUTES.HOME} component={HomePage} />
+      <Route path={ROUTES.ACCOUNT} component={AccountPage} />
+      <Route path={ROUTES.ADMIN} component={AdminPage} />
+      <Route path={ROUTES.MESSAGES} component={MessagesPage} />
+      <Route path={ROUTES.CALENDAR} component={CalendarPage} />
+      <Route path={ROUTES.GROCERIES} component={GroceriesPage} />
+      <Route path={ROUTES.PAYMENTS} component={PaymentsPage} />
     </div>
-  );
-}
+  </Router>
+);
 
-export default App;
+export default withAuthentication(App);

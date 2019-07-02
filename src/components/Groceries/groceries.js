@@ -1,4 +1,26 @@
 import React from 'react';
+import './groceries.css';
+import ReactDOM from 'react-dom';
+
+class Grocery extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {title: 'Grocery Items'}; 
+  }
+  handleClick() {
+    let message = 'kyle is a fag';
+    alert(message);
+  }
+  render() {
+    return (
+      <h1>
+        <button onClick={this.handleClick}>
+	  Jew
+        </button>
+      </h1>
+    );
+  }
+}
 
 const Groceries = () => (
   <div>
@@ -6,4 +28,5 @@ const Groceries = () => (
   </div>
 );
 
-export default Groceries;
+export default Grocery;
+//export default Groceries;

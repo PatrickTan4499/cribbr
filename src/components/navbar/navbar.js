@@ -20,10 +20,8 @@ import HomeIcon from '@material-ui/icons/Home';
 import CalendarIcon from '@material-ui/icons/CalendarToday';
 import GroceriesIcon from '@material-ui/icons/ShoppingCart';
 import MoneyIcon from '@material-ui/icons/Money';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Link } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
-import SignInPage from '../SignIn/signIn';
-import { renderComponent } from 'recompose';
 import './navbar.css';
 
 const drawerWidth = 240;
@@ -103,26 +101,26 @@ export default function PersistentDrawerLeft() {
       return <HomeIcon />
     else if(index === 1)
       return <MailIcon />
-    else if(index == 2)
+    else if(index === 2)
       return <CalendarIcon />
-    else if(index == 3)
+    else if(index === 3)
       return <GroceriesIcon />
-    else if(index == 4)
+    else if(index === 4)
       return <MoneyIcon />
 
   }
 
   function handleClick(text)
   {
-    if(text == "Home")
+    if(text === "Home")
       return ROUTES.HOME;
-    else if(text == "Message Board")
+    else if(text === "Message Board")
       return ROUTES.MESSAGES;
-    else if(text == "Calendar")
+    else if(text === "Calendar")
       return ROUTES.CALENDAR;
-    else if(text == "Groceries")
+    else if(text === "Groceries")
       return ROUTES.GROCERIES;
-    else if(text == "Payments")
+    else if(text === "Payments")
       return ROUTES.PAYMENTS;
   }
 
@@ -182,6 +180,7 @@ export default function PersistentDrawerLeft() {
           [classes.contentShift]: open,
         })}
       >
+        {/*<div className={classes.drawerHeader} />*/}
       </main>
     </div>
   );

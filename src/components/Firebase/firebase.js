@@ -38,7 +38,8 @@ const config = {
 
     users = () => this.db.ref('users');
 }
-  export default Firebase;
+export default Firebase;
+export {app};
 /*
   <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-app.js"></script>

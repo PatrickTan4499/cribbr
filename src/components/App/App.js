@@ -10,7 +10,7 @@ import PasswordForgetPage from '../PasswordForget/passwordForget';
 import HomePage from '../Home/home';
 import AccountPage from '../Account/account';
 import AdminPage from '../Admin/admin';
-import MessagesPage from '../Messages/messages'
+import MessagesPage from '../Messages/messagesBoard'
 import CalendarPage from '../Calendar/calendar'
 import GroceriesPage from '../Groceries/groceries';
 import PaymentsPage from '../Payments/payments';

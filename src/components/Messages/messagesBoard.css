@@ -1,0 +1,33 @@
+.post-editor
+{
+    margin: 0 25%;
+
+}
+
+.card
+{
+    padding: 15px;
+}
+
+.submit-button 
+{
+    background-color: cornflowerblue;
+    color: white;
+    margin: 10px 0;
+    float: right;
+}
+
+.submitButton:hover 
+{
+    outline: none;
+}
+
+@media(max-width: 900px)
+{
+    .post-body,
+    .post-editor
+    {
+        margin: 1em;
+    }
+}
+

@@ -23,6 +23,9 @@ import MoneyIcon from '@material-ui/icons/Money';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
 import './navbar.css';
+import SignOut from '../SignOut/signOut';
+import SignIn from '../SignIn/signIn';
+import app from 'firebase/app';
 
 const drawerWidth = 240;
 
@@ -80,6 +83,9 @@ const useStyles = makeStyles(theme => ({
     }),
     marginLeft: 0,
   },
+  button: {
+    margin: theme.spacing(1),
+  },
 }));
 
 export default function PersistentDrawerLeft() {
@@ -124,6 +130,20 @@ export default function PersistentDrawerLeft() {
       return ROUTES.PAYMENTS;
   }
 
+  function AuthButton()
+  {
+    var loggedIn = false;
+    app.auth().onAuthStateChanged(function(user)
+    {
+      if(user)
+        loggedIn = true;
+    });
+
+    if(loggedIn)
+      return(<SignOut />);
+    return(<div />);
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -143,9 +163,10 @@ export default function PersistentDrawerLeft() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" align="center" noWrap>
+          <Typography className="headingContainer" variant="h6" align="center" noWrap>
             Cribbr
           </Typography>
+          <AuthButton />
         </Toolbar>
       </AppBar>
       <Drawer

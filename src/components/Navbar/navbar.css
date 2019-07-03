@@ -3,3 +3,9 @@
     text-decoration: none;
     color: black;
 }
+
+.headingContainer
+{
+    display: flex;
+    flex: 1;
+}

@@ -9,14 +9,6 @@
     padding: 15px;
 }
 
-.submit-button 
-{
-    background-color: cornflowerblue;
-    color: white;
-    margin: 10px 0;
-    float: right;
-}
-
 .submitButton:hover 
 {
     outline: none;

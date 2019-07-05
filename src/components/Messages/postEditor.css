@@ -1,0 +1,13 @@
+.editor-container
+{
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.submit-button 
+{
+    background-color: cornflowerblue;
+    color: white;
+
+    float: right;
+}

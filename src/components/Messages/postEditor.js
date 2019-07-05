@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
-import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import Button from '@material-ui/core/Button';
+import Textfield from '@material-ui/core/TextField';
+import Paper from '@material-ui/core/Paper';
+import './postEditor.css';
+import { Typography } from '@material-ui/core';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 
 class PostEditor extends Component
 {
@@ -32,15 +37,26 @@ class PostEditor extends Component
     render()
     {
         return (
-            <div className="card post-edtior">
-                <div className="card-body">
-                    <textarea className="form-control" value={this.state.newPostBody} type="text" onChange={this.handlePostEditorInput}>
-                    </textarea>
-                    <Button className="submit-button" onClick={this.createPost}>
-                        Submit
-                    </Button>             
-                </div>
-            </div>
+            <Paper className="editor-container">
+                <Grid container>
+                    <Grid item xs={12}>
+                        <Textfield 
+                            value={this.state.newPostBody} 
+                            placeholder='Write your message here...' 
+                            fullWidth 
+                            multiline
+                            onChange={this.handlePostEditorInput}>
+                        </Textfield>
+                    </Grid>
+                    <Grid item xs={9}></Grid>
+                    <Grid item xs={3}>
+                        <Button variant="contained" color="primary" className="submit-button" onClick={this.createPost}>
+                            Submit
+                        </Button>   
+                    </Grid>
+                </Grid>
+
+            </Paper>
         );
     }
 }

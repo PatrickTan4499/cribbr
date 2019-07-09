@@ -8,3 +8,49 @@
 {
     margin-right: 30px;
 }
+
+.upvotes
+{
+    margin-top: 0.25em;
+}
+
+.timestamp
+{
+    margin-top: 0.75em;
+    font-size: 0.75em;
+    font-style: italic;
+    color: grey;
+}
+
+.edit-field
+{
+    display: none;
+}
+
+.body-field
+{
+    display: block;
+}
+
+.comments
+{
+    margin-top: 0.35em;
+}
+
+.comments:hover
+{
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.submit-button
+{
+    display: none;
+}
+
+.comment-editor
+{
+    margin-left: 100px;
+    display: none;
+}

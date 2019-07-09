@@ -21,8 +21,10 @@ class Messages extends Component
     super(props);
     this.database = app.firestore();
     this.postCollRef = this.database.collection('posts');
+    this.userCollRef = this.database.collection('users');
     this.addPost = this.addPost.bind(this);
     this.updateLocalState = this.updateLocalState.bind(this);
+    this.rerenderHandler = this.rerenderHandler.bind(this);
     this.state = {
       posts: [],
     };
@@ -33,14 +35,9 @@ class Messages extends Component
     const { updateLocalState } = this;
     this.postCollRef.onSnapshot(snapshot => {
       snapshot.forEach(doc => {
-        const obj = this.state.posts.filter(post => {
-          return post.id === doc.id;
-        });
-        console.log(obj);
-        if(!obj)
-        {
+        const index = this.state.posts.findIndex(post => post.id === doc.id );
+        if(index < 0)
           updateLocalState(doc);
-        }
       });
     });
   }
@@ -53,7 +50,10 @@ class Messages extends Component
     var postObj = response;
     postObj.postBody = brokenDownPost;
     postObj.id = doc.id;
-    posts.push(postObj);
+    posts.unshift(postObj);
+    posts.sort(function(x, y) {
+      return y.timestamp - x.timestamp;
+    });
     this.setState({
       posts: posts,
     });
@@ -61,12 +61,20 @@ class Messages extends Component
 
   addPost(postBody)
   {
-    const newPostRef = this.postCollRef.add({
+    const date = new Date();
+    const timestamp = date.getTime();
+    this.postCollRef.add({
       postBody: postBody,
-      upvotes: 0
+      upvotes: 0,
+      timestamp: timestamp,
     });
-    console.log("newpostref: " + newPostRef);
-    //newPostRef.set(postToSave);
+  }
+
+  rerenderHandler()
+  {
+    this.setState({
+      posts: [],
+    });
   }
 
   render()
@@ -76,7 +84,7 @@ class Messages extends Component
         <h2>Messages</h2>
         { this.state.posts.map((post, idx) => {
             return (
-              <Post key={idx} postBody={post.postBody} upvotes={post.upvotes} id={post.id}/>
+              <Post key={post.id} postBody={post.postBody} upvotes={post.upvotes} timestamp={post.timestamp} id={post.id} rerenderHandler={this.rerenderHandler} index={idx} />
             );
           })
         }

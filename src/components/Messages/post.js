@@ -26,6 +26,7 @@ class Post extends Component
         this.toggleComments = this.toggleComments.bind(this);
         this.submitComment = this.submitComment.bind(this);
         this.updateCommentsList = this.updateCommentsList.bind(this);
+        this.rerenderHandler = this.rerenderHandler.bind(this);
         this.id = props.id;
         this.state = {
             liked: 'false',
@@ -40,7 +41,13 @@ class Post extends Component
 
     componentWillMount()
     {
-        this.updateCommentsList();
+        this.postCollRef.doc(this.id).collection('comments').onSnapshot(snapshot => {
+            snapshot.forEach(doc => {
+                const index = this.state.commentsList.findIndex(comment => comment.id === doc.id );
+                if(index < 0)
+                    this.updateCommentsList(doc);
+            });
+        });
     }
 
     handleLike(e)
@@ -162,26 +169,28 @@ class Post extends Component
         this.setState({
             commentEditorBody: '',
         });
-        this.updateCommentsList();
     }
 
-    updateCommentsList()
+    rerenderHandler()
     {
-        var comments = [];
-        this.postCollRef.doc(this.id).collection('comments').onSnapshot(snapshot => {
-            snapshot.forEach(doc => {
-                const commentData = doc.data();
-                const commentObj = {
-                    id: doc.id,
-                    postBody: commentData.postBody.split(/[\r\n]/g),
-                    upvotes: commentData.upvotes,
-                    timestamp: commentData.timestamp,
-                };
-                comments.push(commentObj);
-                comments.sort(function(x, y) {
-                    return x.timestamp - y.timestamp;
-                });
-            });
+        this.setState({
+            commentsList: [],
+        });
+    }
+
+    updateCommentsList(doc)
+    {
+        const commentData = doc.data();
+        const comments = this.state.commentsList;
+        const commentObj = {
+            id: doc.id,
+            postBody: commentData.postBody.split(/[\r\n]/g),
+            upvotes: commentData.upvotes,
+            timestamp: commentData.timestamp,
+        };
+        comments.push(commentObj);
+        comments.sort(function(x, y) {
+            return x.timestamp - y.timestamp;
         });
 
         this.setState({
@@ -252,7 +261,13 @@ class Post extends Component
                     {this.state.commentsList.map((comment, index) => {
                         return (
                             <Paper key={comment.id}>
-                                <Comment postBody={comment.postBody} upvotes={comment.upvotes} timestamp={comment.timestamp}/>
+                                <Comment 
+                                    postBody={comment.postBody} 
+                                    upvotes={comment.upvotes} 
+                                    timestamp={comment.timestamp}
+                                    parentId={this.id}
+                                    id={comment.id}
+                                    rerenderHandler={this.rerenderHandler}/>
                             </Paper>
                         );
                     })}

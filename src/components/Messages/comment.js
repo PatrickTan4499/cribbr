@@ -17,7 +17,13 @@ class Comment extends Component
     constructor(props)
     {
         super(props);
+        this.parentId = this.props.parentId;
+        this.id = this.props.id;
+        this.commentCollRef = app.firestore().collection('posts').doc(this.parentId).collection('comments');
         this.convertTimestamp = this.convertTimestamp.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
+        this.handleLike = this.handleLike.bind(this);
         this.state = {
             liked: 'false',
             thumbColor: 'grey',
@@ -34,9 +40,42 @@ class Comment extends Component
         return new Date(timestamp).toDateString() + " " + new Date(timestamp).toLocaleTimeString();
     }
 
+    handleLike(e)
+    {
+        var tempState = Object.assign({}, this.state);
+        var newUpvotes;
+        if(this.state.liked === 'true')
+        {
+            newUpvotes = this.state.upvotes - 1;
+
+            tempState = {
+                liked: 'false',
+                thumbColor: 'grey',
+                upvotes: newUpvotes,
+            };
+        }
+        else
+        {
+            newUpvotes = this.state.upvotes + 1;
+
+            tempState = {
+                liked: 'true',
+                thumbColor: 'blue',
+                upvotes: newUpvotes,
+            }
+        }
+        
+        this.setState(tempState);
+
+        this.commentCollRef.doc(this.id).set({
+            upvotes: newUpvotes,
+        }, { merge: true });
+    }
+
     handleDelete(e)
     {
-
+        this.commentCollRef.doc(this.id).delete();
+        this.props.rerenderHandler();
     }
 
     handleEdit(e)
@@ -85,7 +124,7 @@ class Comment extends Component
                             </div>
                         </Grid>
                         <Grid item xs={1}>
-                            <IconButton style={{ margin: '0 20px' }} size="small" onClick={(e) => this.props.handleLike()}>
+                            <IconButton style={{ margin: '0 20px' }} size="small" onClick={(e) => this.handleLike()}>
                                 <ThumbUpIcon style={{ color: this.state.thumbColor }} fontSize="small"/>
                             </IconButton>
                         </Grid>

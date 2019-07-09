@@ -267,7 +267,8 @@ class Post extends Component
                                     timestamp={comment.timestamp}
                                     parentId={this.id}
                                     id={comment.id}
-                                    rerenderHandler={this.rerenderHandler}/>
+                                    rerenderHandler={this.rerenderHandler}
+                                    index={index}/>
                             </Paper>
                         );
                     })}

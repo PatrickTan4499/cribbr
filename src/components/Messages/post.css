@@ -22,11 +22,13 @@
     color: grey;
 }
 
+.comment-edit-field,
 .edit-field
 {
     display: none;
 }
 
+.comment-body-field,
 .body-field
 {
     display: block;
@@ -44,6 +46,7 @@
     cursor: pointer;
 }
 
+.comment-submit-button,
 .submit-button
 {
     display: none;

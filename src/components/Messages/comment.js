@@ -11,6 +11,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { Icon, TextField } from '@material-ui/core';
 import { app } from '../Firebase/firebase';
 import 'firebase/firestore';
+import Button from '@material-ui/core/Button';
 
 class Comment extends Component
 {
@@ -23,7 +24,9 @@ class Comment extends Component
         this.convertTimestamp = this.convertTimestamp.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
+        this.handleEditEditorInput = this.handleEditEditorInput.bind(this);
         this.handleLike = this.handleLike.bind(this);
+        this.editPost = this.editPost.bind(this);
         this.state = {
             liked: 'false',
             thumbColor: 'grey',
@@ -31,7 +34,6 @@ class Comment extends Component
             edit: 'false',
             comment: 'false',
             commentsList: [],
-            commentEditorBody: '',
         };
     }
 
@@ -80,21 +82,48 @@ class Comment extends Component
 
     handleEdit(e)
     {
-
+        console.log(this.props.index);
+        if(this.state.edit === 'false')
+        {
+            this.setState({
+                edit: 'true',
+            });
+            document.getElementsByClassName(this.parentId + "-body")[this.props.index].style.display = 'none';
+            document.getElementsByClassName(this.parentId + "-editor")[this.props.index].style.display = 'block';
+            document.getElementsByClassName(this.parentId + "-submit")[this.props.index].style.display = 'block';
+        }
+        else
+        {
+            this.setState({
+                edit: 'false',
+            });
+            document.getElementsByClassName(this.parentId + "-body")[this.props.index].style.display = 'block';
+            document.getElementsByClassName(this.parentId + "-editor")[this.props.index].style.display = 'none';
+            document.getElementsByClassName(this.parentId + "-submit")[this.props.index].style.display = 'none';
+        }
     }
 
-    handleEditorInput()
+    handleEditEditorInput(e)
     {
-
+        this.setState({
+            postBody: e.target.value,
+        });
     }
 
+    editPost()
+    {
+        this.commentCollRef.doc(this.id).set({
+            postBody: this.state.postBody,
+        }, { merge: true });
+        this.props.rerenderHandler();
+    }
 
     render()
     {
         return (
             <Paper className="root">
                 <Grid container direction='row'>
-                    <Grid item xs={10} className="body-field">
+                    <Grid item xs={10} className={['comment-body-field', this.parentId + '-body'].join(' ')}>
                             { this.props.postBody.map((postPart, idx) => (
                                 <div key={idx}>
                                     {postPart}
@@ -102,11 +131,11 @@ class Comment extends Component
                                 )) 
                             }
                     </Grid>
-                    <Grid item xs={10} className="edit-field">
+                    <Grid item xs={10} className={["comment-edit-field", this.parentId + '-editor'].join(' ')}>
                         <TextField
                             defaultValue={this.props.postBody}
                             fullWidth
-                            onChange={this.handleEditorInput}>
+                            onChange={this.handleEditEditorInput}>
                         </TextField>
                     </Grid>
                     <Grid container justify='flex-end'>
@@ -128,9 +157,16 @@ class Comment extends Component
                                 <ThumbUpIcon style={{ color: this.state.thumbColor }} fontSize="small"/>
                             </IconButton>
                         </Grid>
-                        <Grid item xs={2}>
+                        <Grid item xs={11}>
                             <div className="timestamp"> 
                                 { this.convertTimestamp(this.props.timestamp) }
+                            </div>
+                        </Grid>
+                        <Grid item>
+                            <div className={["comment-submit-button", this.parentId + '-submit'].join(' ')}>
+                                <Button variant="contained" color="primary" onClick={this.editPost} size="small">
+                                    Submit
+                                </Button> 
                             </div>
                         </Grid>
                     </Grid>

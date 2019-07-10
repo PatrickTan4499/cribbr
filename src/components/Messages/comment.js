@@ -27,6 +27,10 @@ class Comment extends Component
         this.handleEditEditorInput = this.handleEditEditorInput.bind(this);
         this.handleLike = this.handleLike.bind(this);
         this.editPost = this.editPost.bind(this);
+        this.processPostBody = this.processPostBody.bind(this);
+
+        const processedPostBody = this.processPostBody(this.props.postBody);
+
         this.state = {
             liked: 'false',
             thumbColor: 'grey',
@@ -34,7 +38,17 @@ class Comment extends Component
             edit: 'false',
             comment: 'false',
             commentsList: [],
+            postBody: processedPostBody,
         };
+    }
+
+    processPostBody(list)
+    {
+        var result = '';
+        for(var i = 0; i < list.length; i++)
+            result += (list[i] + '\r\n');
+        
+        return result;
     }
 
     convertTimestamp(timestamp)
@@ -82,7 +96,6 @@ class Comment extends Component
 
     handleEdit(e)
     {
-        console.log(this.props.index);
         if(this.state.edit === 'false')
         {
             this.setState({
@@ -112,10 +125,13 @@ class Comment extends Component
 
     editPost()
     {
-        this.commentCollRef.doc(this.id).set({
-            postBody: this.state.postBody,
-        }, { merge: true });
-        this.props.rerenderHandler();
+        if(this.state.postBody.replace(/\s/g, '').length)
+        {
+            this.commentCollRef.doc(this.id).set({
+                postBody: this.state.postBody,
+            }, { merge: true });
+            this.props.rerenderHandler();
+        }
     }
 
     render()

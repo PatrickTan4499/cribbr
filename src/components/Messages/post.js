@@ -27,7 +27,11 @@ class Post extends Component
         this.submitComment = this.submitComment.bind(this);
         this.updateCommentsList = this.updateCommentsList.bind(this);
         this.rerenderHandler = this.rerenderHandler.bind(this);
+        this.processPostBody = this.processPostBody.bind(this);
         this.id = props.id;
+
+        const processedPostBody = this.processPostBody(this.props.postBody);
+
         this.state = {
             liked: 'false',
             thumbColor: 'grey',
@@ -36,7 +40,17 @@ class Post extends Component
             comment: 'false',
             commentsList: [],
             commentEditorBody: '',
+            postBody: processedPostBody,
         };
+    }
+
+    processPostBody(list)
+    {
+        var result = '';
+        for(var i = 0; i < list.length; i++)
+            result += (list[i] + '\r\n');
+        
+        return result;
     }
 
     componentWillMount()
@@ -124,10 +138,13 @@ class Post extends Component
 
     editPost()
     {
-        this.postCollRef.doc(this.id).set({
-            postBody: this.state.postBody,
-        }, { merge: true });
-        this.props.rerenderHandler();
+        if(this.state.postBody.replace(/\s/g, '').length)
+        {
+            this.postCollRef.doc(this.id).set({
+                postBody: this.state.postBody,
+            }, { merge: true });
+            this.props.rerenderHandler();
+        }
     }
 
     toggleComments(e)
@@ -159,16 +176,19 @@ class Post extends Component
 
     submitComment()
     {
-        const date = new Date();
-        const timestamp = date.getTime();
-        this.postCollRef.doc(this.id).collection('comments').add({
-            postBody: this.state.commentEditorBody,
-            upvotes: 0,
-            timestamp: timestamp,
-        });
-        this.setState({
-            commentEditorBody: '',
-        });
+        if(this.state.commentEditorBody.replace(/\s/g, '').length)
+        {
+            const date = new Date();
+            const timestamp = date.getTime();
+            this.postCollRef.doc(this.id).collection('comments').add({
+                postBody: this.state.commentEditorBody,
+                upvotes: 0,
+                timestamp: timestamp,
+            });
+            this.setState({
+                commentEditorBody: '',
+            });
+        }
     }
 
     rerenderHandler()

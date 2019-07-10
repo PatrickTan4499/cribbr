@@ -28,10 +28,13 @@ class PostEditor extends Component
 
     createPost()
     {
-        this.props.addPost(this.state.newPostBody);
-        this.setState({
-            newPostBody: '',
-        });
+        if(this.state.newPostBody.replace(/\s/g, '').length)
+        {
+            this.props.addPost(this.state.newPostBody);
+            this.setState({
+                newPostBody: '',
+            });
+        }
     }
 
     render()

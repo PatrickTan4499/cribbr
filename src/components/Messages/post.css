@@ -1,4 +1,59 @@
-.post-body
+.root
 {
+    padding: 20px;
     margin: 10px 0;
+}
+
+.icon-button
+{
+    margin-right: 30px;
+}
+
+.upvotes
+{
+    margin-top: 0.25em;
+}
+
+.timestamp
+{
+    margin-top: 0.75em;
+    font-size: 0.75em;
+    font-style: italic;
+    color: grey;
+}
+
+.comment-edit-field,
+.edit-field
+{
+    display: none;
+}
+
+.comment-body-field,
+.body-field
+{
+    display: block;
+}
+
+.comments
+{
+    margin-top: 0.35em;
+}
+
+.comments:hover
+{
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.comment-submit-button,
+.submit-button
+{
+    display: none;
+}
+
+.comment-editor
+{
+    margin-left: 100px;
+    display: none;
 }

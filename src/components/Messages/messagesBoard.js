@@ -6,6 +6,7 @@ import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../../../node_modules/firebase/database'
 import Post from './post';
 import PostEditor from './postEditor';
+import 'firebase/firestore';
 
 const MessagesPage = () => (
   <Container>
@@ -18,10 +19,12 @@ class Messages extends Component
   constructor(props)
   {
     super(props);
-    this.database = app.database();
-    this.databaseRef = this.database.ref('/posts');
+    this.database = app.firestore();
+    this.postCollRef = this.database.collection('posts');
+    this.userCollRef = this.database.collection('users');
     this.addPost = this.addPost.bind(this);
     this.updateLocalState = this.updateLocalState.bind(this);
+    this.rerenderHandler = this.rerenderHandler.bind(this);
     this.state = {
       posts: [],
     };
@@ -30,17 +33,27 @@ class Messages extends Component
   componentWillMount()
   {
     const { updateLocalState } = this;
-    this.databaseRef.on('child_added', snapshot => {
-      const response = snapshot.val();
-      updateLocalState(response);
+    this.postCollRef.onSnapshot(snapshot => {
+      snapshot.forEach(doc => {
+        const index = this.state.posts.findIndex(post => post.id === doc.id );
+        if(index < 0)
+          updateLocalState(doc);
+      });
     });
   }
 
-  updateLocalState(response)
+  updateLocalState(doc)
   {
+    const response = doc.data();
     const posts = this.state.posts;
     const brokenDownPost = response.postBody.split(/[\r\n]/g); 
-    posts.push(brokenDownPost);
+    var postObj = response;
+    postObj.postBody = brokenDownPost;
+    postObj.id = doc.id;
+    posts.unshift(postObj);
+    posts.sort(function(x, y) {
+      return y.timestamp - x.timestamp;
+    });
     this.setState({
       posts: posts,
     });
@@ -48,8 +61,20 @@ class Messages extends Component
 
   addPost(postBody)
   {
-    const postToSave = {postBody};
-    this.databaseRef.push().set(postToSave);
+    const date = new Date();
+    const timestamp = date.getTime();
+    this.postCollRef.add({
+      postBody: postBody,
+      upvotes: 0,
+      timestamp: timestamp,
+    });
+  }
+
+  rerenderHandler()
+  {
+    this.setState({
+      posts: [],
+    });
   }
 
   render()
@@ -57,9 +82,9 @@ class Messages extends Component
     return(
       <div>
         <h2>Messages</h2>
-        { this.state.posts.map((postBody, idx) => {
+        { this.state.posts.map((post, idx) => {
             return (
-              <Post key={idx} postBody={postBody} />
+              <Post key={post.id} postBody={post.postBody} upvotes={post.upvotes} timestamp={post.timestamp} id={post.id} rerenderHandler={this.rerenderHandler} index={idx} />
             );
           })
         }

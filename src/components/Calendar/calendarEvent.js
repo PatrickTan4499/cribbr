@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Modal from '@material-ui/core/Modal';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import './calendarEvent.css'
@@ -13,74 +12,86 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import Button from '@material-ui/core/Button';
+import { app } from '../Firebase/firebase';
+import Paper from '@material-ui/core/Paper';
+import moment from 'moment';
 
-function rand() {
-    return Math.round(Math.random() * 20) - 10;
-  }
-  
-  function getModalStyle() {
-    const top = 50 + rand();
-    const left = 50 + rand();
-  
-    return {
-      top: `${top}%`,
-      left: `${left}%`,
-      transform: `translate(-${top}%, -${left}%)`,
-    };
-  }
-  
-  const useStyles = makeStyles(theme => ({
-    paper: {
-      position: 'absolute',
-      width: 400,
-      backgroundColor: theme.palette.background.paper,
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(4),
-      outline: 'none',
-    },
-  }));
-  
-  function AddEventButton () 
+class CalendarEvent extends Component 
+{
+  constructor(props)
   {
-    const [open, setOpen] = React.useState(false);
-    // getModalStyle is not a pure function, we roll the style only on the first render
-    const [modalStyle] = React.useState(getModalStyle);
+    super(props);   
   
-    const handleOpen = () => {
-      setOpen(true);
+    this.eventsRef = app.firestore().collection('events');
+    
+    this.handleClose = this.handleClose.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
+    this.addEvent = this.addEvent.bind(this);
+    this.handleNameInput = this.handleNameInput.bind(this);
+    this.state = {
+      open: false,
+      choreName: '',
+      timestamp: this.props.selectedDate.format('x'),
     };
+  }
+
+  handleOpen = () => {
+    this.setState({
+      open: true,
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      open: false,
+    });
+  };
+
+  addEvent = () => {
+    this.eventsRef.add({
+      choreName: this.state.choreName,
+      timestamp: this.state.timestamp,
+    });
+    this.handleClose();
+  }
   
-    const handleClose = () => {
-      setOpen(false);
-    };
-  
-    const classes = useStyles();
-  
+  handleNameInput(e)
+  {
+    this.setState({
+      choreName: e.target.value,
+    });
+  }
+
+  render()
+  {
     return (
-      <div className="buttonContainer">
+      <div className="button-container">
         <Fab color="primary" aria-label="Add">
-          <AddIcon onClick={(e) => handleOpen()}/>
+          <AddIcon onClick={(e) => this.handleOpen(e)}/>
         </Fab>
-        <Modal open={open} onClose={handleClose}>
-          <div style={modalStyle} className={classes.paper}>
-            <Grid container className="formTable">
+        <Modal open={this.state.open} onClose={this.handleClose}>
+          <Paper className="paper">
+            <Grid container>
                 <Grid item>
                     <Typography variant="h6" id="modal-title">
                         Add Chore
                     </Typography>
                 </Grid>
             </Grid>
-            <Grid container className="formTable">
+            <Grid container>
                 <Grid item>
                     <Typography>Chore Name</Typography>
-                    <TextField required label="Required"/>
+                    <TextField 
+                      required label="Required"
+                      onChange={this.handleNameInput}/>
                 </Grid>
             </Grid>
-            <Grid container className="formTable">
+            <Grid container>
                 <Grid item>
-                    <FormControl component="fieldset" className={classes.formControl}>
+                    <FormControl component="fieldset">
                         <Typography>Repeats</Typography>
-                        <RadioGroup className={classes.group}>
+                        <RadioGroup>
                             <FormControlLabel value="daily" control={<Radio color="primary"/>} label="Daily" />
                             <FormControlLabel value="weekly" control={<Radio color="primary"/>} label="Weekly" />
                             <FormControlLabel value="monthly" control={<Radio color="primary"/>} label="Monthly" />
@@ -88,11 +99,19 @@ function rand() {
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-              </Grid>  
-          </div>
+              </Grid> 
+              <Grid container>
+                <Grid item>
+                  <Button variant="contained" color="primary" onClick={(e) => this.addEvent()} size="small">
+                      Submit
+                  </Button> 
+                </Grid>
+              </Grid> 
+          </Paper>
         </Modal>
       </div>
     );
   }
+}
 
-  export default AddEventButton;
+export default CalendarEvent;

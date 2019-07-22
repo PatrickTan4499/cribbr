@@ -1,291 +1,172 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import Navbar from '../Navbar/navbar';
 import './calendarSelector.css';
-import { Typography } from '@material-ui/core';
+import { TableHead, TableCell, Table, TableRow, TableBody, IconButton } from '@material-ui/core';
 import { thisExpression } from '@babel/types';
 import LeftIcon from '@material-ui/icons/ChevronLeft';
 import RightIcon from '@material-ui/icons/ChevronRight';
+import Chip from '@material-ui/core/Chip';
+import { app } from '../Firebase/firebase';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 
-const style = 
+export default class CalendarSelector extends Component 
 {
-  position: "relative",
-  margin: "50px auto"
-}
-
-export default class CalendarSelector extends Component {
-  state = 
-  {
-    dateContext: moment(),
-    today: moment(),
-    showMonthPopup: false,
-    showYearPopup: false,
-    dayClicked: 0
-  }
-
   constructor(props)
   {
     super(props);
-    this.width = props.width || "350px";
-    this.style = props.style || {};
-  }
+    this.eventsRef = app.firestore().collection('events');
 
-  weekdays = moment.weekdays();
-  weekdaysShort = moment.weekdaysShort();
-  months = moment.months();
-
-  year = () => {
-    return this.state.dateContext.format("Y");
-  }
-  month = () => {
-    return this.state.dateContext.format("MMMM");
-  }
-  currentDate = () => {
-    return this.state.dateContext.get("date");
-  }
-  daysInMonth = () => {
-    return this.state.dateContext.daysInMonth();
-  }
-  currentDay = () => {
-    return this.state.dateContext.format("D");
-  }
-
-  populateYears = () => {
-    let container = [];
-    for(let i = parseInt(this.year()) - 5; i < parseInt(this.year()) + 5; i++)
+    var dates = [];
+    //fill blanks
+    const firstDayOfMonth = moment().date(1).day();
+    for(var i = 0; i < firstDayOfMonth; i++)
     {
-      container.push(i);
+      dates.push({
+        value: '',
+      });
     }
 
-    return container;
-  }
-  years = this.populateYears();
-
-  firstDayOfMonth = () => {
-    let dateContext = this.state.dateContext;
-    let firstDay = moment(dateContext).startOf('month').format('d');
-    return firstDay;
-  }
-
-  setMonth = (month) => {
-    let monthNumber = this.months.indexOf(month);
-    let dateContext = Object.assign({}, this.state.dateContext);
-    dateContext = moment(dateContext).set("month", monthNumber);
-    this.setState({
-      dateContext: dateContext,
-      dayClicked: 0
-    });
-  }
-
-  setYear = (year) => {
-    let dateContext = Object.assign({}, this.state.dateContext);
-    dateContext = moment(dateContext).set("year", year);
-    this.setState({
-      dateContext: dateContext,
-      dayClicked: 0
-    });
-  }
-
-  onSelectChange = (e, data) => {
-    if(this.months.includes(data))
+    //fill the rest of the days
+    const daysInMonth = moment().daysInMonth();
+    for(var i = 0; i <= daysInMonth; i++)
     {
-      this.setMonth(data);
-      this.props.onMonthChange && this.props.onMonthChange();
+      dates.push({
+        value: i,
+      });
     }
-    else if(this.years.includes(data))
+
+    //split into rows of 7
+    var rows = [];
+    var currRow = [];
+    for(var i = 0; i < dates.length; i++)
     {
-      this.setYear(data);
-      this.props.onYearChange && this.props.onYearChange();
+      //add to row
+      if(i % 7 || i == 0)
+      {
+        currRow.push(i);
+      }
+      //split
+      else
+      {
+        rows.push(currRow);
+        currRow = [];
+        currRow.push(i);
+      }
     }
-  }
 
-  SelectList = (props) => {
-    let popup = props.data.map((data) => {
-      let currentDate = (
-        data == moment().year() ||
-        data == moment().format("MMMM"))
-        ? "current-day" : "unselectedListItem";
-      return(
-        <div className={currentDate} key={data}>
-          <a href="#" onClick={(e) => {this.onSelectChange(e, data)}}>
-            {data} 
-          </a>
-        </div>
-      );
-    });
+    //process the month
+    var month;
+    switch(moment().month())
+    {
+      case 0:
+        month = "January";
+        break;
+      case 1:
+        month = "February";
+        break;
+      case 2:
+        month = "March";
+        break;
+      case 3:
+        month = "April";
+        break;
+      case 4:
+        month = "May";
+        break;
+      case 5:
+        month = "Juney";
+        break;
+      case 6:
+        month = "July";
+        break;
+      case 7:
+        month = "August";
+        break;
+      case 8:
+        month = "September";
+        break;
+      case 9:
+        month = "October";
+        break;
+      case 10:
+        month = "November";
+        break;
+      case 11:
+        month = "December";
+        break;
+    }
 
-    return(
-      <div className="month-popup">
-        {popup}
-      </div>
-    );
-  }
+    rows.push(currRow);
+    console.log(rows);
+    this.state = {
+      rows: rows,
+      daysInMonth: daysInMonth,
+      month: month,
+    }
 
-  onChangeMonth = (e, month) => {
-    this.setState({
-      showMonthPopup: !this.state.showMonthPopup
-    });
-  } 
-
-  MonthNav = () => {
-    return(
-      <span className="label-month" onClick={(e) => {this.onChangeMonth(e, this.month())}}>
-        {this.month()}
-        {this.state.showMonthPopup &&
-          <this.SelectList data={this.months} />  
-        }
-      </span>
-    );
-  }
-
-  onChangeYear = (e, year) => {
-    this.setState({
-      showYearPopup: !this.state.showYearPopup,
-    });
-  }
-
-  YearNav = () => {
-    return(
-      <span className="label-year" onClick={(e) => {this.onChangeYear(e, this.year())}}>
-        {this.year()}  
-        {this.state.showYearPopup &&
-          <this.SelectList data={this.years} />
-        }
-      </span>
-    );
-  }
-
-  prevMonth = () => {
-    let dateContext = Object.assign({}, this.state.dateContext);
-    dateContext = moment(dateContext).subtract(1, "month");
-    this.setState({
-      dateContext: dateContext,
-      dayClicked: 0
-    });
-    this.props.onPrevMonth && this.props.onPrevMonth();
-  }
-
-  nextMonth = () => {
-    let dateContext = Object.assign({}, this.state.dateContext);
-    dateContext = moment(dateContext).add(1, "month");
-    this.setState({
-      dateContext: dateContext,
-      dayClicked: 0
-    });
-    this.props.onNextMonth && this.props.onNextMonth();
-  }
-
-  onDayClick = (e, day) => {
-    this.setState({
-      dayClicked: day
-    });
-    this.props.onDayClick && this.props.onDayClick();
+    console.log(this.state.month);
   }
 
   render()
   {
-    let weekdays = this.weekdaysShort.map((day) => {
-      return (
-        <td key={day} className="week-day">{day}</td>
-      )
-    });
-
-    let blanks = [];
-    for(let i = 0; i < this.firstDayOfMonth(); i++)
-    {
-      blanks.push(
-        <td key={i * 80} className="empty-slots">
-          {""}
-        </td>
-      );
-    }
-
-    let daysInMonth = [];
-    for(let d = 1; d <= this.daysInMonth(); d++)
-    {
-      let className;
-      if(d == this.currentDay() && 
-        this.months.indexOf(this.month()) == moment().month() &&
-        this.year() == moment().year())
-      {
-        className = "day current-day";
-      } 
-      else if(d === this.state.dayClicked)
-      {
-        className = "day-clicked";
-      }
-      else
-      {
-        className = "day";
-      }
-      daysInMonth.push(
-        <td key={d} className={className} onClick={(e) => {this.onDayClick(e, d)}}>
-          <span>
-            {d}
-          </span>
-        </td>
-      );
-    }
-
-    let total = blanks.concat(daysInMonth);
-    let rows = [];
-    let curr = [];
-    total.forEach((row, i) => {
-      if(i % 7 === 0)
-      {
-        rows.push(curr);
-        curr = [];
-        curr.push(row);
-      }
-      else
-      {
-        curr.push(row);
-      }
-
-      if(i === total.length - 1)
-      {
-        rows.push(curr);
-      }
-    });
-
-    let trElements = rows.map((d, i) => {
-      return (
-        <tr key={i * 100}>
-          {d}
-        </tr>
-      );
-    });
-
     return (
       <div>
-        <h2 className="heading">Calendar</h2>
-        <div className="calendar-container">
-          <table className="calendar">
-            <thead>
-              <tr className="calendar-header">
-                <td colSpan="1" className="nav-month">
-                  <LeftIcon onClick={(e) => {this.prevMonth()}} />
-                </td>
-                <td colSpan="2">
-                  <span><this.MonthNav /></span>
-                </td>
-                <td colSpan="1"></td>
-                <td colSpan="2">
-                  <span><this.YearNav /></span>
-                </td>
-                <td colSpan="1" className="nav-month">
-                  <RightIcon onClick={(e) => {this.nextMonth()}} />
-                </td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                {weekdays}
-              </tr>
-              {trElements}
-            </tbody>
-          </table>
-        </div>
+        <Typography variant="h4">
+          Calendar
+        </Typography>
+        <Paper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <IconButton size="small">
+                    <LeftIcon />
+                  </IconButton>
+                </TableCell>
+                <TableCell colSpan={5} align="center">
+                  <Typography variant="h5">
+                    {this.state.month}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <IconButton size="small">
+                    <RightIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Sunday</TableCell>
+                <TableCell>Monday</TableCell>
+                <TableCell>Tuesday</TableCell>
+                <TableCell>Wednesday</TableCell>
+                <TableCell>Thursday</TableCell>
+                <TableCell>Friday</TableCell>
+                <TableCell>Saturday</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {
+                this.state.rows.map((row, i) => (
+                  <TableRow key={i}>
+                    {
+                      row.map((day, i) => {
+                        if(day == 0 || day > this.state.daysInMonth)
+                        {
+                          return <TableCell align="right"></TableCell>
+                        }
+                        else
+                        {
+                          return <TableCell align="right">{day}</TableCell>
+                        }
+                      })
+                    }
+                  </TableRow>
+                ))
+              }
+            </TableBody>
+          </Table>
+        </Paper>
       </div>
     );
   }

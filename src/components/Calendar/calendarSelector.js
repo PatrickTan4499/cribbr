@@ -16,24 +16,39 @@ export default class CalendarSelector extends Component
   {
     super(props);
     this.eventsRef = app.firestore().collection('events');
+    this.handleNext = this.handleNext.bind(this);
+    this.handlePrev = this.handlePrev.bind(this);
+    this.getMonthString = this.getMonthString.bind(this);
+    this.getRows = this.getRows.bind(this);
 
+    const curr = moment();
+    const rows = this.getRows(curr);
+    
+    this.state = {
+      rows: rows,
+      daysInMonth: curr.daysInMonth(),
+      month: moment().month(),
+      year: moment().year(),
+    }
+
+    console.log(this.state.year);
+  }
+
+  getRows(currMoment)
+  {
     var dates = [];
     //fill blanks
-    const firstDayOfMonth = moment().date(1).day();
+    const firstDayOfMonth = currMoment.date(1).day();
     for(var i = 0; i < firstDayOfMonth; i++)
     {
-      dates.push({
-        value: '',
-      });
+      dates.push('');
     }
 
     //fill the rest of the days
-    const daysInMonth = moment().daysInMonth();
-    for(var i = 0; i <= daysInMonth; i++)
+    const daysInMonth = currMoment.daysInMonth();
+    for(var i = 1; i <= daysInMonth; i++)
     {
-      dates.push({
-        value: i,
-      });
+      dates.push(i);
     }
 
     //split into rows of 7
@@ -44,20 +59,26 @@ export default class CalendarSelector extends Component
       //add to row
       if(i % 7 || i == 0)
       {
-        currRow.push(i);
+        currRow.push(dates[i]);
       }
       //split
       else
       {
         rows.push(currRow);
         currRow = [];
-        currRow.push(i);
+        currRow.push(dates[i]);
       }
     }
 
-    //process the month
+    currRow.push('');
+    rows.push(currRow);
+    return rows;
+  }
+
+  getMonthString(monthNum)
+  {
     var month;
-    switch(moment().month())
+    switch(monthNum)
     {
       case 0:
         month = "January";
@@ -75,7 +96,7 @@ export default class CalendarSelector extends Component
         month = "May";
         break;
       case 5:
-        month = "Juney";
+        month = "June";
         break;
       case 6:
         month = "July";
@@ -97,15 +118,53 @@ export default class CalendarSelector extends Component
         break;
     }
 
-    rows.push(currRow);
-    console.log(rows);
-    this.state = {
-      rows: rows,
-      daysInMonth: daysInMonth,
-      month: month,
-    }
+    return month;
+  }
 
-    console.log(this.state.month);
+  handleNext(e)
+  {
+    if(this.state.month == 11)
+    {
+      const temp = this.state.year + 1 + "-1-1";
+      const currMoment = moment(temp, "YYYY-MM-DD");
+      this.setState({
+        month: 0,
+        year: this.state.year + 1,
+        rows: this.getRows(currMoment)
+      });
+    }
+    else
+    {
+      const temp = this.state.year + "-" + (this.state.month + 2) + "-1";
+      const currMoment = moment(temp, "YYYY-MM-DD");
+      this.setState({
+        month: this.state.month + 1,
+        rows: this.getRows(currMoment),
+      });
+    }
+  }
+
+  handlePrev()
+  {
+    if(this.state.month == 0)
+    {
+      const temp = this.state.year - 1 + "-12-1";
+      const currMoment = moment(temp, "YYYY-MM-DD");
+      this.setState({
+        month: 11,
+        year: this.state.year - 1,
+        rows: this.getRows(currMoment),
+      });
+    }
+    else
+    {
+      const temp = this.state.year + "-" + this.state.month + "-1";
+      const currMoment = moment(temp, "YYYY-MM-DD");
+      this.setState({
+        month: this.state.month - 1,
+        rows: this.getRows(currMoment),
+      });
+    }
   }
 
   render()
@@ -120,17 +179,17 @@ export default class CalendarSelector extends Component
             <TableHead>
               <TableRow>
                 <TableCell>
-                  <IconButton size="small">
+                  <IconButton size="small" onClick={(e) => this.handlePrev()}>
                     <LeftIcon />
                   </IconButton>
                 </TableCell>
                 <TableCell colSpan={5} align="center">
                   <Typography variant="h5">
-                    {this.state.month}
+                    {this.getMonthString(this.state.month)} {this.state.year}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <IconButton size="small">
+                  <IconButton size="small" onClick={(e) => this.handleNext()}>
                     <RightIcon />
                   </IconButton>
                 </TableCell>

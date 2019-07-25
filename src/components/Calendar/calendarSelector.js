@@ -124,6 +124,7 @@ export default class CalendarSelector extends Component
 
   handleNext(e)
   {
+    this.props.onLoading();
     var newYear;
     var newMonth;
     var currMoment;
@@ -157,11 +158,13 @@ export default class CalendarSelector extends Component
       rows: this.getRows(currMoment),
       today: today,
       selectedDay: '',
+      daysInMonth: currMoment.daysInMonth(),
     });
   }
 
   handlePrev()
   {
+    this.props.onLoading();
     var newYear;
     var newMonth;
     var currMoment;
@@ -195,6 +198,7 @@ export default class CalendarSelector extends Component
       rows: this.getRows(currMoment),
       today: today,
       selectedDay: '',
+      daysInMonth: currMoment.daysInMonth(),
     });
   }
 
@@ -263,28 +267,40 @@ export default class CalendarSelector extends Component
                           year: this.state.year,
                         };
 
+                        let tempToday = false;
+                        let tempSelected = false;
+                        let tempLastDay = false;
                         if(day == 0 || day > this.state.daysInMonth)
                         {
                           return <TableCell key={i} align="left"></TableCell>
-                        }
-                        else if(day == this.state.today)
+                        }          
+                        
+                        if(day == this.state.today)
                         {
-                          return (
-                            <CalendarDay key={i} date={currentDate} today={true} selected={false} handleSelect={this.handleSelect} />
-                          )
+                          tempToday = true;
                         }
                         else if(day == this.state.selectedDay)
                         {
-                          return (
-                            <CalendarDay key={i} date={currentDate} today={false} selected={true} handleSelect={this.handleSelect} />
-                          )
+                          tempSelected = true;
                         }
-                        else
+
+                        if(day == this.state.daysInMonth)
                         {
-                          return (
-                            <CalendarDay key={i} date={currentDate} today={false} selected={false} handleSelect={this.handleSelect} />
-                          )
+                          tempLastDay = true;
                         }
+
+                        return (
+                          <CalendarDay 
+                            key={i} 
+                            date={currentDate} 
+                            today={tempToday} 
+                            selected={tempSelected} 
+                            isLastDay={tempLastDay} 
+                            handleSelect={this.handleSelect}
+                            onDoneLoading={this.props.onDoneLoading}
+                            parentLoading = {this.props.parentLoading}
+                            />
+                        );
                       })
                     }
                   </TableRow>

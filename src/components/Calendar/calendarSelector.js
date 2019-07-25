@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import './calendarSelector.css';
 import { TableHead, TableCell, Table, TableRow, TableBody, IconButton } from '@material-ui/core';
 import { thisExpression } from '@babel/types';
 import LeftIcon from '@material-ui/icons/ChevronLeft';
@@ -9,6 +8,7 @@ import Chip from '@material-ui/core/Chip';
 import { app } from '../Firebase/firebase';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import CalendarDay from './calendarDay';
 
 export default class CalendarSelector extends Component 
 {
@@ -20,6 +20,7 @@ export default class CalendarSelector extends Component
     this.handlePrev = this.handlePrev.bind(this);
     this.getMonthString = this.getMonthString.bind(this);
     this.getRows = this.getRows.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
 
     const curr = moment();
     const rows = this.getRows(curr);
@@ -29,9 +30,9 @@ export default class CalendarSelector extends Component
       daysInMonth: curr.daysInMonth(),
       month: moment().month(),
       year: moment().year(),
+      today: moment().date(),
+      selectedDay: '',
     }
-
-    console.log(this.state.year);
   }
 
   getRows(currMoment)
@@ -123,48 +124,85 @@ export default class CalendarSelector extends Component
 
   handleNext(e)
   {
+    var newYear;
+    var newMonth;
+    var currMoment;
+    var today;
     if(this.state.month == 11)
     {
-      const temp = this.state.year + 1 + "-1-1";
-      const currMoment = moment(temp, "YYYY-MM-DD");
-      this.setState({
-        month: 0,
-        year: this.state.year + 1,
-        rows: this.getRows(currMoment)
-      });
+      newYear = this.state.year + 1;
+      newMonth = 0;
+      const temp = newYear + "-" + (newMonth + 1) + "-1";
+      currMoment = moment(temp, "YYYY-MM-DD");
+      if(moment().year() == newYear && moment().month() == newMonth)
+        today = moment().date();
+      else 
+        today = '';
     }
     else
     {
+      newYear = this.state.year;
+      newMonth = this.state.month + 1;
       const temp = this.state.year + "-" + (this.state.month + 2) + "-1";
-      const currMoment = moment(temp, "YYYY-MM-DD");
-      this.setState({
-        month: this.state.month + 1,
-        rows: this.getRows(currMoment),
-      });
+      currMoment = moment(temp, "YYYY-MM-DD");
+      if(moment().year() == newYear && moment().month() == newMonth)
+        today = moment().date();
+      else 
+        today = '';
     }
+
+    this.setState({
+      month: newMonth,
+      year: newYear,
+      rows: this.getRows(currMoment),
+      today: today,
+      selectedDay: '',
+    });
   }
 
   handlePrev()
   {
+    var newYear;
+    var newMonth;
+    var currMoment;
+    var today;
     if(this.state.month == 0)
     {
-      const temp = this.state.year - 1 + "-12-1";
-      const currMoment = moment(temp, "YYYY-MM-DD");
-      this.setState({
-        month: 11,
-        year: this.state.year - 1,
-        rows: this.getRows(currMoment),
-      });
+      newYear = this.state.year - 1;
+      newMonth = 11;
+      const temp = newYear + "-" + (newMonth + 1) + "-1";
+      currMoment = moment(temp, "YYYY-MM-DD");
+      if(moment().year() == newYear && moment().month() == newMonth)
+        today = moment().date();
+      else 
+        today = '';
     }
     else
     {
-      const temp = this.state.year + "-" + this.state.month + "-1";
-      const currMoment = moment(temp, "YYYY-MM-DD");
-      this.setState({
-        month: this.state.month - 1,
-        rows: this.getRows(currMoment),
-      });
+      newYear = this.state.year;
+      newMonth = this.state.month - 1;
+      const temp = newYear + "-" + (newMonth + 1) + "-1";
+      currMoment = moment(temp, "YYYY-MM-DD");
+      if(moment().year() == newYear && moment().month() == newMonth)
+        today = moment().date();
+      else 
+        today = '';
     }
+
+    this.setState({
+      month: newMonth,
+      year: newYear,
+      rows: this.getRows(currMoment),
+      today: today,
+      selectedDay: '',
+    });
+  }
+
+  handleSelect(day)
+  {
+    this.setState({
+      selectedDay: day,
+    });
   }
 
   render()
@@ -176,6 +214,15 @@ export default class CalendarSelector extends Component
         </Typography>
         <Paper>
           <Table>
+            <colgroup>
+              <col style={{width:'14%'}}/>
+              <col style={{width:'14%'}}/>
+              <col style={{width:'14%'}}/>
+              <col style={{width:'14%'}}/>
+              <col style={{width:'14%'}}/>
+              <col style={{width:'14%'}}/>
+              <col style={{width:'14%'}}/>
+            </colgroup>
             <TableHead>
               <TableRow>
                 <TableCell>
@@ -195,13 +242,13 @@ export default class CalendarSelector extends Component
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Sunday</TableCell>
-                <TableCell>Monday</TableCell>
-                <TableCell>Tuesday</TableCell>
-                <TableCell>Wednesday</TableCell>
-                <TableCell>Thursday</TableCell>
-                <TableCell>Friday</TableCell>
-                <TableCell>Saturday</TableCell>
+                <TableCell>Sun</TableCell>
+                <TableCell>Mon</TableCell>
+                <TableCell>Tue</TableCell>
+                <TableCell>Wed</TableCell>
+                <TableCell>Thu</TableCell>
+                <TableCell>Fri</TableCell>
+                <TableCell>Sat</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -210,13 +257,33 @@ export default class CalendarSelector extends Component
                   <TableRow key={i}>
                     {
                       row.map((day, i) => {
+                        let currentDate = {
+                          month: this.state.month,
+                          day: day,
+                          year: this.state.year,
+                        };
+
                         if(day == 0 || day > this.state.daysInMonth)
                         {
-                          return <TableCell align="right"></TableCell>
+                          return <TableCell key={i} align="left"></TableCell>
+                        }
+                        else if(day == this.state.today)
+                        {
+                          return (
+                            <CalendarDay key={i} date={currentDate} today={true} selected={false} handleSelect={this.handleSelect} />
+                          )
+                        }
+                        else if(day == this.state.selectedDay)
+                        {
+                          return (
+                            <CalendarDay key={i} date={currentDate} today={false} selected={true} handleSelect={this.handleSelect} />
+                          )
                         }
                         else
                         {
-                          return <TableCell align="right">{day}</TableCell>
+                          return (
+                            <CalendarDay key={i} date={currentDate} today={false} selected={false} handleSelect={this.handleSelect} />
+                          )
                         }
                       })
                     }

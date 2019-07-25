@@ -1,0 +1,21 @@
+.today
+{
+    background-color: #3f51b5;
+    color: white;
+}
+
+.day-number-text
+{
+    color: white;
+}
+
+.day-box:hover
+{
+    background-color: rgb(63, 81, 181, 0.25);
+    cursor: pointer;
+}
+
+.selected-box
+{
+    background-color: rgb(63, 81, 181, 0.25);
+}

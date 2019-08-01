@@ -12,6 +12,8 @@
 .day-box
 {
     padding: 10px;
+    overflow: hidden;
+    position: relative;
 }
 
 .day-box:hover
@@ -23,4 +25,10 @@
 .selected-box
 {
     background-color: rgb(63, 81, 181, 0.25);
+}
+
+.day-box-inner
+{
+    height: 100px;
+    z-index: 1;
 }

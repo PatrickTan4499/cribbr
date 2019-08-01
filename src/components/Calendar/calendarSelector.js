@@ -213,9 +213,6 @@ export default class CalendarSelector extends Component
   {
     return (
       <div>
-        <Typography variant="h4">
-          Calendar
-        </Typography>
         <Paper>
           <Table>
             <colgroup>
@@ -258,7 +255,7 @@ export default class CalendarSelector extends Component
             <TableBody>
               {
                 this.state.rows.map((row, i) => (
-                  <TableRow key={i}>
+                  <TableRow key={i} style={{ height: 100 }}>
                     {
                       row.map((day, i) => {
                         let currentDate = {
@@ -299,6 +296,8 @@ export default class CalendarSelector extends Component
                             handleSelect={this.handleSelect}
                             onDoneLoading={this.props.onDoneLoading}
                             parentLoading = {this.props.parentLoading}
+                            reload={this.props.reload}
+                            selectedDate={this.props.selectedDate}
                             />
                         );
                       })

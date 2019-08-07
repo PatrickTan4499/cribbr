@@ -55,13 +55,20 @@ class Post extends Component
 
     componentWillMount()
     {
-        this.postCollRef.doc(this.id).collection('comments').onSnapshot(snapshot => {
+        this.postCollRef.doc(this.id).collection('comments').get().then(snapshot => {
             snapshot.forEach(doc => {
                 const index = this.state.commentsList.findIndex(comment => comment.id === doc.id );
                 if(index < 0)
                     this.updateCommentsList(doc);
             });
-        });
+        })
+        .then(() => {
+                if(this.props.parentLoading && this.props.isLastPost)
+                {
+                    this.props.onDoneLoading();
+                }
+            }
+        );
     }
 
     handleLike(e)

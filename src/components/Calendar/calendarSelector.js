@@ -297,7 +297,6 @@ export default class CalendarSelector extends Component
                             onDoneLoading={this.props.onDoneLoading}
                             parentLoading = {this.props.parentLoading}
                             reload={this.props.reload}
-                            selectedDate={this.props.selectedDate}
                             />
                         );
                       })

@@ -12,6 +12,14 @@ class CalendarEventChip extends Component
         this.handleModalClose = this.handleModalClose.bind(this);
         this.state = {
             modalOpen: false,
+            selectedDate: '',
+        }
+    }
+
+    static getDerivedStateFromProps(newProps)
+    {
+        return {
+            selectedDate: newProps.selectedDate,
         }
     }
 
@@ -31,6 +39,7 @@ class CalendarEventChip extends Component
 
     render()
     {
+        console.log(this.props.selectedDate);
         return(
             <Grid item xs={12}>
                 <Chip
@@ -44,7 +53,7 @@ class CalendarEventChip extends Component
                 />
                 <CalendarEventModal 
                     modalOpen={this.state.modalOpen}
-                    selectedDate={this.props.selectedDate}
+                    selectedDate={this.state.selectedDate}
                     handleClose={this.handleModalClose}
                     reload={this.props.reload}
                 />

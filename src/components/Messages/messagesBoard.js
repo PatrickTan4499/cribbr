@@ -7,6 +7,8 @@ import '../../../node_modules/firebase/database'
 import Post from './post';
 import PostEditor from './postEditor';
 import 'firebase/firestore';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
 
 const MessagesPage = () => (
   <Container>
@@ -25,8 +27,12 @@ class Messages extends Component
     this.addPost = this.addPost.bind(this);
     this.updateLocalState = this.updateLocalState.bind(this);
     this.rerenderHandler = this.rerenderHandler.bind(this);
+    this.handleSelectedDate = this.handleSelectedDate.bind(this);
+    this.handleDoneLoading = this.handleDoneLoading.bind(this);
+    this.handleLoading = this.handleLoading.bind(this);
     this.state = {
       posts: [],
+      loading: true,
     };
   }
 
@@ -77,18 +83,79 @@ class Messages extends Component
     });
   }
 
+  handleSelectedDate(selectedContext)
+  {
+    this.setState({
+      selectedDate: selectedContext,
+    });
+  }
+  
+  handleDoneLoading()
+  {
+    if(this.state.loading)
+    {
+      this.setState({
+        loading: false,
+      });
+
+      document.getElementById("loading-spinner").style.display = 'none';
+      document.getElementById("messages-board").style.display = 'block';
+    }
+  }
+
+  handleLoading()
+  {
+    if(!this.state.loading)
+    {
+      this.setState({
+        loading: true,
+      });
+
+      document.getElementById("loading-spinner").style.display = 'flex';
+      document.getElementById("messages-board").style.display = 'none';
+    }
+  }
+
   render()
   {
     return(
       <div>
-        <h2>Messages</h2>
-        { this.state.posts.map((post, idx) => {
-            return (
-              <Post key={post.id} postBody={post.postBody} upvotes={post.upvotes} timestamp={post.timestamp} id={post.id} rerenderHandler={this.rerenderHandler} index={idx} />
-            );
-          })
-        }
-        <PostEditor addPost={this.addPost} />
+        <Grid container
+          id="loading-spinner"
+          alignItems="center"
+          direction="column"
+          justify="center"
+          style={{ marginTop: 50 }}
+          >
+          <Grid item xs={3}>
+            <CircularProgress />
+          </Grid>
+        </Grid>
+        <Container
+          id="messages-board">
+          { this.state.posts.map((post, idx) => {
+              var lastPost = false;
+              if(idx === this.state.posts.length - 1)
+                lastPost = true;
+
+              return (
+                <Post 
+                  key={post.id} 
+                  postBody={post.postBody} 
+                  upvotes={post.upvotes} 
+                  timestamp={post.timestamp} 
+                  id={post.id} 
+                  rerenderHandler={this.rerenderHandler} 
+                  index={idx} 
+                  onDoneLoading={this.handleDoneLoading}
+                  parentLoading={this.state.loading}
+                  isLastPost={lastPost}
+                  />
+              );
+            })
+          }
+          <PostEditor addPost={this.addPost} />
+        </Container>
       </div>
     );
   }

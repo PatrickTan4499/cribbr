@@ -64,6 +64,11 @@ class CalendarDay extends Component
             day: this.props.date.day,
             month: this.props.date.month,
             year: this.props.date.year,
+            dateObj: new Date(
+                this.props.date.year, 
+                this.props.date.month, 
+                this.props.date.day,
+                0, 0, 0, 0),
             poppupOpen: false,
             poppupAnchor: null,
         }
@@ -259,7 +264,7 @@ class CalendarDay extends Component
                                     {this.state.events.map((event, index) => {
                                         return (
                                             <CalendarEventChip
-                                                selectedDate={this.props.selectedDate}
+                                                selectedDate={this.state.dateObj}
                                                 event={event}
                                                 index={index}
                                                 reload={this.props.reload}

@@ -27,17 +27,24 @@ class CalendarEventModal extends Component
 
         this.state = {
             choreName: '',
-            timestamp: '',
+            timestamp: this.props.selectedDate * 1,
         };
     }
 
     addEvent = () => {
-        this.eventsRef.add({
-            choreName: this.state.choreName,
-            timestamp: this.state.timestamp,
-        });
-        this.props.handleClose();
-        this.props.reload();
+        if(/\S/.test(this.state.choreName))
+        {
+            this.eventsRef.add({
+                choreName: this.state.choreName,
+                timestamp: this.state.timestamp * 1,
+            });
+    
+            this.props.handleClose();
+            this.setState({
+                choreName: '',
+            });
+            this.props.reload();
+        }
     }
     
     handleNameInput(e)
@@ -47,13 +54,11 @@ class CalendarEventModal extends Component
         });
     }
 
-    handleDateChange()
+    handleDateChange(date)
     {
-        console.log(this.state.timestamp);
-        console.log(new Date(this.state.timestamp));
-        /*this.setState({
-            timestamp: new Date().getTime(),
-        })*/
+        this.setState({
+            timestamp: date,
+        })
     }
 
     render()
@@ -91,8 +96,8 @@ class CalendarEventModal extends Component
                                 <KeyboardDatePicker
                                     margin="normal"
                                     id="mui-pickers-date"
-                                    value={this.props.selectedDate}
-                                    onChange={this.handleDateChange}
+                                    value={new Date(this.state.timestamp)}
+                                    onChange={date => this.handleDateChange(date)}
                                     />
                             </Grid>
                             <Grid item xs={12}>

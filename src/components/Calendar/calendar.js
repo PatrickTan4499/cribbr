@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import CalendarSelector from './calendarSelector';
 import './calendar.css';
-import CalendarEvent from './calendarEventAdder';
+import CalendarEventAdder from './calendarEventAdder';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import moment from 'moment';
@@ -11,21 +11,13 @@ class Calendar extends Component {
   constructor(props)
   {
     super(props);
-    this.handleSelectedDate = this.handleSelectedDate.bind(this);
     this.handleDoneLoading = this.handleDoneLoading.bind(this);
     this.handleLoading = this.handleLoading.bind(this);
     this.reload = this.reload.bind(this);
     this.state = {
-      selectedDate: moment(),
+      selectedDate: moment().format('x'),
       loading: true,
     };
-  }
-
-  handleSelectedDate(selectedContext)
-  {
-    this.setState({
-      selectedDate: selectedContext,
-    });
   }
   
   handleDoneLoading()
@@ -83,7 +75,6 @@ class Calendar extends Component {
           </Grid>
           <Grid item xs={8}>
             <CalendarSelector 
-              onDayClick={this.handleSelectedDate} 
               onDoneLoading={this.handleDoneLoading} 
               parentLoading={this.state.loading} 
               onLoading={this.handleLoading}
@@ -93,7 +84,7 @@ class Calendar extends Component {
               />
           </Grid>
           <Grid item xs={2}>
-            <CalendarEvent 
+            <CalendarEventAdder
               selectedDate={this.state.selectedDate}
               reload={this.reload}
               />

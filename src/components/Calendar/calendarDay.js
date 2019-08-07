@@ -216,7 +216,7 @@ class CalendarDay extends Component
                         {this.state.events.map((event, index) => {
                             return (
                                 <CalendarEventChip 
-                                    selectedDate={this.props.selectedDate}
+                                    selectedDate={this.state.dateObj}
                                     event={event}
                                     index={index}
                                     reload={this.props.reload}

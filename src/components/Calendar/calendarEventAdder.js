@@ -16,6 +16,14 @@ class CalendarEvent extends Component
     this.handleClose = this.handleClose.bind(this);
     this.state = {
       modalOpen: false,
+      selectedDate: this.props.selectedDate,
+    }
+  }
+  
+  static getDerivedStateFromProps(newProps)
+  {
+    return {
+      selectedDate: newProps.selectedDate,
     }
   }
 
@@ -42,9 +50,10 @@ class CalendarEvent extends Component
         </Fab>
         <CalendarEventModal 
           modalOpen={this.state.modalOpen}
-          selectedDate={this.props.selectedDate}
+          selectedDate={this.state.selectedDate}
           handleClose={this.handleClose}
           reload={this.props.reload}
+          defaultValue=""
         />
       </div>
     );

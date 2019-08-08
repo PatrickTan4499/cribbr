@@ -204,6 +204,8 @@ export default class CalendarSelector extends Component
 
   handleSelect(day)
   {
+    var dateString = (this.state.month + 1) + '/' + day + '/' + this.state.year;
+    this.props.onSelectDate(new Date(dateString));
     this.setState({
       selectedDay: day,
     });

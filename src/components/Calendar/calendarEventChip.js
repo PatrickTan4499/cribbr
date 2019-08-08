@@ -55,6 +55,7 @@ class CalendarEventChip extends Component
                     selectedDate={this.state.selectedDate}
                     handleClose={this.handleModalClose}
                     reload={this.props.reload}
+                    defaultValue={this.props.event.name}
                 />
             </Grid>
         );

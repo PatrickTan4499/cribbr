@@ -14,6 +14,7 @@ class Calendar extends Component {
     this.handleDoneLoading = this.handleDoneLoading.bind(this);
     this.handleLoading = this.handleLoading.bind(this);
     this.reload = this.reload.bind(this);
+    this.handleSelectDate = this.handleSelectDate.bind(this);
     this.state = {
       selectedDate: moment().format('x'),
       loading: true,
@@ -53,6 +54,13 @@ class Calendar extends Component {
     })
   }
 
+  handleSelectDate(date)
+  {
+    this.setState({
+      selectedDate: date.getTime(),
+    })
+  }
+
   render()
   {
     return (
@@ -81,6 +89,7 @@ class Calendar extends Component {
               handleEditEvent={this.handleEditEvent}
               reload={this.reload}
               selectedDate={this.state.selectedDate}
+              onSelectDate={this.handleSelectDate}
               />
           </Grid>
           <Grid item xs={2}>

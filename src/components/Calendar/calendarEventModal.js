@@ -24,11 +24,18 @@ class CalendarEventModal extends Component
         this.addEvent = this.addEvent.bind(this);
         this.handleNameInput = this.handleNameInput.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
-
+        
         this.state = {
             choreName: '',
             timestamp: this.props.selectedDate * 1,
         };
+    }
+    
+    static getDerivedStateFromProps(newProps)
+    {
+        return {
+            timestamp: newProps.selectedDate * 1,
+        }
     }
 
     addEvent = () => {
@@ -78,7 +85,9 @@ class CalendarEventModal extends Component
                                 <TextField 
                                     style={{ width: '100%' }}
                                     required label="Required"
-                                    onChange={this.handleNameInput}/>
+                                    onChange={this.handleNameInput}
+                                    defaultValue={this.props.defaultValue}
+                                    />
                             </Grid>
                             <Grid item xs={12}>
                                 <Typography>Repeats</Typography>

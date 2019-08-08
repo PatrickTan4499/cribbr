@@ -80,6 +80,11 @@ class CalendarDay extends Component
             day: newProps.date.day,
             month: newProps.date.month,
             year: newProps.date.year,
+            dateObj: new Date(
+                newProps.date.year, 
+                newProps.date.month, 
+                newProps.date.day,
+                0, 0, 0, 0),
         }
     }
 

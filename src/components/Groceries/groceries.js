@@ -8,14 +8,14 @@ class Grocery extends React.Component {
     this.state = {title: 'Grocery Items'}; 
   }
   handleClick() {
-    let message = 'kyle is a fag';
+    let message = 'kyle is a';
     alert(message);
   }
   render() {
     return (
       <h1>
         <button onClick={this.handleClick}>
-	  Jew
+	  Placeholder
         </button>
       </h1>
     );
